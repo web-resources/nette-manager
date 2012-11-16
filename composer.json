@@ -1,0 +1,22 @@
+{
+	"name": "mishak/web-resource-management",
+	"description": "Tools for management of scripts and styles (using Nette Framework)",
+	"keywords": [ "nette", "scripts", "style", "resource", "dependency", "manager"],
+	"authors": [
+		{
+			"name": "Michal Gebauer",
+			"email": "mishak@mishak.net",
+			"homepage": "https://mishak.net",
+			"role": "developer"
+		}
+	],
+	"autoload":{
+        "psr-0":{
+            "Mishak\\WebResourceManagement":""
+        }
+    },
+	"require": {
+		"php": ">=5.4.0",
+		"nette/nette": "2.0.6+"
+	}
+}

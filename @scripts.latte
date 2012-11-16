@@ -1,0 +1,14 @@
+{default $scripts = []}
+{default $scriptVariables = []}
+{$presenter->context->scriptManager
+	->usePublic($presenter->context->parameters['productionMode'])
+	->setPath($baseUri . '/js')
+	->setPresenter($presenter)
+	->setRequired($scripts)
+	->output()}
+
+<script n:ifset="$scriptVariables">
+{foreach $scriptVariables as $name => $value}
+{if FALSE === strpos($name, '.')}var {/if}{!$name} = {$value};
+{/foreach}
+</script>

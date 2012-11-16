@@ -1,0 +1,6 @@
+{default $styles = []}
+{$presenter->context->styleManager
+	->setPath($baseUri)
+	->setPresenter($presenter)
+	->setRequired($styles)
+	->output()}
