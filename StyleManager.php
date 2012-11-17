@@ -11,7 +11,7 @@ class StyleManager {
 	 *
 	 * @var array
 	 */
-	private $styles = [];
+	private $styles = array();
 
 	public function __construct($styles)
 	{
@@ -20,9 +20,9 @@ class StyleManager {
 
 	public function setRequired($styles)
 	{
-		$this->required = [];
-		$this->dependencies = [];
-		$this->queue = [];
+		$this->required = array();
+		$this->dependencies = array();
+		$this->queue = array();
 		foreach ($styles as $style) {
 			$this->add($style);
 		}
@@ -61,7 +61,7 @@ class StyleManager {
 		while ($this->queue) {
 			$printed = FALSE;
 			$styles = $this->queue;
-			$this->queue = [];
+			$this->queue = array();
 			foreach ($styles as $style) {
 				$fragment[] = $this->outputStyle($style);
 				$fragment[] = "\n";
@@ -111,7 +111,7 @@ class StyleManager {
 		$style = (object) $this->styles[$name];
 		$style->name = $name;
 		$style->printed = FALSE;
-		$style->depends = isset($style->depends) ? (is_array($style->depends) ? $style->depends : [ $style->depends ]) : [];
+		$style->depends = isset($style->depends) ? (is_array($style->depends) ? $style->depends : array($style->depends)) : array();
 		foreach ($style->depends as $dependency) {
 			$this->add($dependency);
 			$this->dependencies[$dependency][$style->name] = $style;
@@ -126,7 +126,7 @@ class StyleManager {
 	{
 		$fragment = Html::el();
 		if (!empty($style->include)) {
-			$fragment->create('style', ['type' => 'text/css'])->setText(file_get_contents(WWW_DIR . '/js/' . $filename));
+			$fragment->create('style', array('type' => 'text/css'))->setText(file_get_contents(WWW_DIR . '/js/' . $filename));
 			$style->printed = TRUE;
 			return $fragment;
 		}
@@ -145,7 +145,7 @@ class StyleManager {
 			if (!file_exists($style->filename)) {
 				throw new \Exception("Missing style '$style->name' file '$style->filename'.");
 			}
-			$command = [ 'lessc', escapeshellarg($style->filename) ];
+			$command = array( 'lessc', escapeshellarg($style->filename) );
 			if ($minified) {
 				$command[] = '-compress';
 			}
@@ -167,11 +167,11 @@ class StyleManager {
 			file_put_contents($output . '.gz', gzencode($contents));
 			touch($output . '.gz', filemtime($output));
 		}
-		$fragment->create('link', [
+		$fragment->create('link', array(
 			'href' => $this->path . '/generated/styles/' . $md5 . $extension,
 			'rel' => 'stylesheet',
 			'type' => 'text/css'
-		]);
+		));
 		$style->printed = TRUE;
 		return $fragment;
 	}

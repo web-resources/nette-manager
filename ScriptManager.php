@@ -12,7 +12,7 @@ class ScriptManager {
 	 *
 	 * @var array
 	 */
-	private $scripts = [];
+	private $scripts = array();
 
 	private $translator;
 
@@ -32,9 +32,9 @@ class ScriptManager {
 
 	public function setRequired($scripts)
 	{
-		$this->required = [];
-		$this->dependencies = [];
-		$this->queue = [];
+		$this->required = array();
+		$this->dependencies = array();
+		$this->queue = array();
 		foreach ($scripts as $script) {
 			$this->add($script);
 		}
@@ -73,7 +73,7 @@ class ScriptManager {
 		while ($this->queue) {
 			$printed = FALSE;
 			$scripts = $this->queue;
-			$this->queue = [];
+			$this->queue = array();
 			foreach ($scripts as $script) {
 				$fragment[] = $this->outputScript($script);
 				$fragment[] = "\n";
@@ -123,7 +123,7 @@ class ScriptManager {
 		$script = (object) $this->scripts[$name];
 		$script->name = $name;
 		$script->printed = FALSE;
-		$script->depends = isset($script->depends) ? (is_array($script->depends) ? $script->depends : [ $script->depends ]) : [];
+		$script->depends = isset($script->depends) ? (is_array($script->depends) ? $script->depends : array($script->depends)) : array();
 		foreach ($script->depends as $dependency) {
 			$this->add($dependency);
 			$this->dependencies[$dependency][$script->name] = $script;
@@ -154,25 +154,25 @@ class ScriptManager {
 		$fragment = Html::el();
 		if (isset($script->translations)) {
 			$init = 'var translations = typeof translations == \'undefined\' ? {} : translations;';
-			$content = [ $init ];
+			$content = array( $init );
 			foreach ($script->translations as $text) {
 				$content[] = 'translations[' . json_encode($text) . '] = ' . json_encode($this->translator ? $this->translator->translate($text) : $text) . ';';
 			}
-			$fragment->create('script', [ 'type' => 'text/javascript'])->setText("\n" . implode("\n", $content));
+			$fragment->create('script', array('type' => 'text/javascript'))->setText("\n" . implode("\n", $content));
 		}
 		if (!empty($script->include)) {
-			$fragment->create('script', [ 'type' => 'text/javascript' ])->setText(file_get_contents(WWW_DIR . '/js/' . $filename));
+			$fragment->create('script', array('type' => 'text/javascript'))->setText(file_get_contents(WWW_DIR . '/js/' . $filename));
 		} else {
-			$fragment->create('script', [
+			$fragment->create('script', array(
 				'src' => parse_url($filename, PHP_URL_SCHEME) || substr($filename, 0, 2) === '//' ? $filename : $this->path . '/' . $filename,
 				'type' => 'text/javascript'
-			]);
+			));
 		}
 		if (isset($script->config)) {
 			$class = $script->config['class'];
 			$config = new $class;
 			$variables = $config->getVariables($script->name, $this->presenter);
-			$content = [];
+			$content = array();
 			foreach ($variables as $name => $value) {
 				$line = '';
 				if (FALSE === strpos($name, '.')) {
@@ -182,7 +182,7 @@ class ScriptManager {
 				$content[] = $line;
 			}
 			$fragment[] = "\n";
-			$fragment->create('script', [ 'type' => 'text/javascript' ])->setText("\n" . implode("\n", $content));
+			$fragment->create('script', array('type' => 'text/javascript'))->setText("\n" . implode("\n", $content));
 		}
 		$script->printed = TRUE;
 		return $fragment;
