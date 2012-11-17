@@ -2,6 +2,7 @@
 	"name": "mishak/web-resource-management",
 	"description": "Tools for management of scripts and styles (using Nette Framework)",
 	"keywords": [ "nette", "scripts", "style", "resource", "dependency", "manager"],
+	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"authors": [
 		{
 			"name": "Michal Gebauer",
