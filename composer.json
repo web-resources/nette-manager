@@ -17,6 +17,6 @@
     },
 	"require": {
 		"php": ">=5.4.0",
-		"nette/nette": "2.0.6+"
+		"nette/nette": "2.0.*"
 	}
 }
