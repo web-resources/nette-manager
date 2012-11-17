@@ -1,6 +1,6 @@
 {default $scripts = []}
 {default $scriptVariables = []}
-{$presenter->context->scriptManager
+{$presenter->context->getService('resources.scriptManager')
 	->usePublic($presenter->context->parameters['productionMode'])
 	->setPath($baseUri . '/js')
 	->setPresenter($presenter)

@@ -9,6 +9,13 @@ Main purpose is to simplify resource management of scripts and styles by moving 
 
 Add to your `composer.json` requirement `"mishak/web-resource-management": "dev-master"`.
 Directory `%WWW_DIR%/generated` must be writable by server. Scripts must be under `%WWW_DIR%/js` directory for now.
+Add to your bootstrap between creation of configurator and creation of container:
+
+	$configurator = new Nette\Config\Configurator;
+	// after the line above
+	Mishak\WebResourceManagement\DI\WebResourceManagementExtension::register($configurator);
+	// before the line bellow
+	$container = $configurator->createContainer();
 
 ## Capabilities
 
@@ -31,7 +38,7 @@ Directory `%WWW_DIR%/generated` must be writable by server. Scripts must be unde
 
 In config.neon:
 
-	parameters:
+	resources:
 
 		styles:
 			bootstrap:

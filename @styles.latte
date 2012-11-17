@@ -1,5 +1,5 @@
 {default $styles = []}
-{$presenter->context->styleManager
+{$presenter->context->getService('resources.styleManager')
 	->setPath($baseUri)
 	->setPresenter($presenter)
 	->setRequired($styles)
