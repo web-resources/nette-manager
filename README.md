@@ -17,6 +17,18 @@ Add to your bootstrap between creation of configurator and creation of container
 	// before the line bellow
 	$container = $configurator->createContainer();
 
+### In template
+
+	<head>
+		...
+		{include ../../libs/mishak/web-resource-management/@styles.latte}
+	</head>
+
+	<body>
+		...
+		{include ../../libs/mishak/web-resource-management/@scripts.latte}
+	</body>
+
 ## Capabilities
 
  - dependency management
