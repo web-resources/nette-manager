@@ -17,6 +17,7 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 	 */
 	public $defaults = array(
 		'usePublic' => FALSE,
+		'useMinified' => FALSE /* parameters['productionMode'] */,
 		'generateGzipFile' => FALSE,
 		'scripts' => array(),
 		'styles' => array()
@@ -27,14 +28,17 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 	public function loadConfiguration()
 	{
 		$container = $this->getContainerBuilder();
+		$this->defaults['useMinified'] = $container->parameters['productionMode'];
 		$config = $this->getConfig($this->defaults);
 
 		$scriptManager = $container->addDefinition($this->prefix('scriptManager'))
 			->setClass('Mishak\WebResourceManagement\ScriptManager', array('scripts' => $config['scripts']));
 		$scriptManager->addSetup('setUsePublic', array($config['usePublic']));
+		$scriptManager->addSetup('setUseMinified', array($config['useMinified']));
 
 		$styleManager = $container->addDefinition($this->prefix('styleManager'))
 			->setClass('Mishak\WebResourceManagement\StyleManager', array('styles' => $config['styles']));
+		$styleManager->addSetup('setUseMinified', array($config['useMinified']));
 		$styleManager->addSetup('setGenerateGzipFile', array($config['generateGzipFile']));
 	}
 

@@ -30,6 +30,14 @@ class ScriptManager {
 		return $this;
 	}
 
+	private $useMinified = FALSE;
+
+	public function setUseMinified($use)
+	{
+		$this->useMinified = $use;
+		return $this;
+	}
+
 	public function setRequired($scripts)
 	{
 		$this->required = array();
@@ -134,17 +142,11 @@ class ScriptManager {
 		return $this->required[$name] = $script;
 	}
 
-	/**
-	 * filename - dev
-	 * minified - prod
-	 * public - prod
-	 */
 	private function outputScript($script)
 	{
-		$productionMode = $this->presenter->context->parameters['productionMode'];
-		if ($productionMode && $this->usePublic && isset($script->public)) {
+		if ($this->usePublic && isset($script->public)) {
 			$filename = $script->public;
-		} elseif (isset($script->minified) && ($productionMode || !isset($script->filename))) {
+		} elseif (isset($script->minified) && ($this->useMinified || !isset($script->filename))) {
 			$filename = $script->minified;
 		} elseif (isset($script->filename)) {
 			$filename = $script->filename;

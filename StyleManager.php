@@ -29,6 +29,14 @@ class StyleManager {
 		return $this;
 	}
 
+	private $useMinified = FALSE;
+
+	public function setUseMinified($use)
+	{
+		$this->useMinified = $use;
+		return $this;
+	}
+
 	private $generateGzipFile = FALSE;
 
 	public function setGenerateGzipFile($use)
@@ -138,11 +146,10 @@ class StyleManager {
 			$style->printed = TRUE;
 			return $fragment;
 		}
-		$minified = $this->presenter->context->parameters['productionMode'];
 		$md5 = md5_file($style->filename);
 		$dir = WWW_DIR . '/generated/styles';
 		$extension = '.css';
-		if ($minified) {
+		if ($this->useMinified) {
 			$extension = '.min' . $extension;
 		}
 		$output = $dir . '/' . $md5 . $extension;
@@ -154,7 +161,7 @@ class StyleManager {
 				throw new \Exception("Missing style '$style->name' file '$style->filename'.");
 			}
 			$command = array( 'lessc', escapeshellarg($style->filename) );
-			if ($minified) {
+			if ($this->useMinified) {
 				$command[] = '-compress';
 			}
 			$contents = shell_exec(implode(' ', $command));
