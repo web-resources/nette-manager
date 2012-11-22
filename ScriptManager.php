@@ -75,8 +75,15 @@ class ScriptManager {
 		return $this;
 	}
 
+	/**
+	 * Holds all translations needed by scripts
+	 * @var array
+	 */
+	private $translations = array();
+
 	public function output()
 	{
+		$this->translations = array();
 		$fragment = Html::el();
 		while ($this->queue) {
 			$printed = FALSE;
@@ -88,7 +95,21 @@ class ScriptManager {
 				$this->addScriptDependenciesToQueue($script);
 			}
 		}
+		if ($this->translations) {
+			$fragment->insert(0, $this->outputTranslations());
+		}
 		return $fragment;
+	}
+
+	private function outputTranslations()
+	{
+		$script = Html::el('script', array('type' => 'text/javascript'));
+		$contents = "var translations = typeof translations == 'undefined' ? {} : translations;\n";
+		foreach (array_unique($this->translations) as $message) {
+			$contents .= 'translations[' . json_encode($text) . '] = ' . json_encode($this->translator ? $this->translator->translate($text) : $text) . ";\n";
+		}
+		$script->setText($contents);
+		return $script;
 	}
 
 	private $minified = TRUE;
@@ -155,12 +176,7 @@ class ScriptManager {
 		}
 		$fragment = Html::el();
 		if (isset($script->translations)) {
-			$init = 'var translations = typeof translations == \'undefined\' ? {} : translations;';
-			$content = array( $init );
-			foreach ($script->translations as $text) {
-				$content[] = 'translations[' . json_encode($text) . '] = ' . json_encode($this->translator ? $this->translator->translate($text) : $text) . ';';
-			}
-			$fragment->create('script', array('type' => 'text/javascript'))->setText("\n" . implode("\n", $content));
+			$this->translations = array_merge($this->translations, $script->translations);
 		}
 		if (!empty($script->include)) {
 			$fragment->create('script', array('type' => 'text/javascript'))->setText(file_get_contents(WWW_DIR . '/js/' . $filename));
