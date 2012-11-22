@@ -19,6 +19,7 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 		'usePublic' => FALSE,
 		'useMinified' => FALSE /* parameters['productionMode'] */,
 		'generateGzipFile' => FALSE,
+		'outputDir' => '%wwwDir%/generated',
 		'scripts' => array(),
 		'styles' => array()
 	);
@@ -40,6 +41,8 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 			->setClass('Mishak\WebResourceManagement\StyleManager', array('styles' => $config['styles']));
 		$styleManager->addSetup('setUseMinified', array($config['useMinified']));
 		$styleManager->addSetup('setGenerateGzipFile', array($config['generateGzipFile']));
+		$styleManager->addSetup('setOutputDirectory', array(rtrim($config['outputDir']) . '/styles'));
+		$styleManager->addSetup('setPath', array('generated/styles'));
 	}
 
 

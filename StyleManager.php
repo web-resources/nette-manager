@@ -45,16 +45,27 @@ class StyleManager {
 		return $this;
 	}
 
+	private $outputDirectory;
+
+	public function setOutputDirectory($dir)
+	{
+		if (is_dir($dir) && is_writable($dir)) {
+			$this->outputDirectory = $dir;
+		} else {
+			throw new \Exception("Output directory must be writable directory.");
+		}
+	}
+
 	private $path;
 
 	/**
-	 * Set server path to styles
+	 * Set path to styles relative to baseUri
 	 *
 	 * @param string $path
 	 */
 	public function setPath($path)
 	{
-		$this->path = $path;
+		$this->path = rtrim($path, '/');
 		return $this;
 	}
 
@@ -150,7 +161,7 @@ class StyleManager {
 			return $fragment;
 		}
 		$md5 = md5_file($style->filename);
-		$dir = WWW_DIR . '/generated/styles';
+		$dir = $this->outputDirectory;
 		$extension = '.css';
 		if ($this->useMinified) {
 			$extension = '.min' . $extension;
@@ -192,7 +203,7 @@ class StyleManager {
 			}
 		}
 		$fragment->create('link', array(
-			'href' => $this->baseUri . '/generated/styles/' . $md5 . $extension,
+			'href' => $this->baseUri . '/' . $this->path . '/' . $md5 . $extension,
 			'rel' => 'stylesheet',
 			'type' => 'text/css'
 		));
