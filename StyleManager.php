@@ -142,7 +142,7 @@ class StyleManager {
 	{
 		$fragment = Html::el();
 		if (!empty($style->include)) {
-			$fragment->create('style', array('type' => 'text/css'))->setText(file_get_contents(WWW_DIR . '/js/' . $filename));
+			$fragment->create('style', array('type' => 'text/css'))->setText(file_get_contents($style->filename));
 			$style->printed = TRUE;
 			return $fragment;
 		}
