@@ -22,11 +22,11 @@ class ScriptManager {
 		$this->translator = $translator;
 	}
 
-	private $public = TRUE;
+	private $usePublic = FALSE;
 
-	public function usePublic($use)
+	public function setUsePublic($use)
 	{
-		$this->public = $use;
+		$this->usePublic = $use;
 		return $this;
 	}
 
@@ -142,7 +142,7 @@ class ScriptManager {
 	private function outputScript($script)
 	{
 		$productionMode = $this->presenter->context->parameters['productionMode'];
-		if ($productionMode && $this->public && isset($script->public)) {
+		if ($productionMode && $this->usePublic && isset($script->public)) {
 			$filename = $script->public;
 		} elseif (isset($script->minified) && ($productionMode || !isset($script->filename))) {
 			$filename = $script->minified;

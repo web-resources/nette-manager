@@ -29,6 +29,14 @@ class StyleManager {
 		return $this;
 	}
 
+	private $generateGzipFile = FALSE;
+
+	public function setGenerateGzipFile($use)
+	{
+		$this->generateGzipFile = $use;
+		return $this;
+	}
+
 	private $path;
 
 	/**
@@ -164,8 +172,10 @@ class StyleManager {
 				return 'url(' . $md5 . '/' . $resource . ')';
 			}, $contents);
 			file_put_contents($output, $contents);
-			file_put_contents($output . '.gz', gzencode($contents));
-			touch($output . '.gz', filemtime($output));
+			if ($this->generateGzipFile) {
+				file_put_contents($output . '.gz', gzencode($contents));
+				touch($output . '.gz', filemtime($output));
+			}
 		}
 		$fragment->create('link', array(
 			'href' => $this->path . '/generated/styles/' . $md5 . $extension,

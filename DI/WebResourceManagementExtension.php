@@ -16,6 +16,8 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 	 * @var array
 	 */
 	public $defaults = array(
+		'usePublic' => FALSE,
+		'generateGzipFile' => FALSE,
 		'scripts' => array(),
 		'styles' => array()
 	);
@@ -24,18 +26,16 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 
 	public function loadConfiguration()
 	{
-		$builder = $this->getContainerBuilder();
+		$container = $this->getContainerBuilder();
 		$config = $this->getConfig($this->defaults);
 
-		$builder->addDefinition($this->prefix('scriptManager'))
-			->setClass('Mishak\WebResourceManagement\ScriptManager', array(
-				'scripts' => $config['scripts']
-			));
+		$scriptManager = $container->addDefinition($this->prefix('scriptManager'))
+			->setClass('Mishak\WebResourceManagement\ScriptManager', array('scripts' => $config['scripts']));
+		$scriptManager->addSetup('setUsePublic', array($config['usePublic']));
 
-		$builder->addDefinition($this->prefix('styleManager'))
-			->setClass('Mishak\WebResourceManagement\StyleManager', array(
-				'styles' => $config['styles']
-			));
+		$styleManager = $container->addDefinition($this->prefix('styleManager'))
+			->setClass('Mishak\WebResourceManagement\StyleManager', array('styles' => $config['styles']));
+		$styleManager->addSetup('setGenerateGzipFile', array($config['generateGzipFile']));
 	}
 
 
