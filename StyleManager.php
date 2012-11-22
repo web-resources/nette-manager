@@ -60,6 +60,8 @@ class StyleManager {
 
 	private $presenter;
 
+	private $baseUri;
+
 	/**
 	 * Set presenter (is passed to style config)
 	 *
@@ -68,6 +70,7 @@ class StyleManager {
 	public function setPresenter($presenter)
 	{
 		$this->presenter = $presenter;
+		$this->baseUri = rtrim($presenter->getContext()->getService('httpRequest')->getUrl()->getBaseUrl(), '/');
 		return $this;
 	}
 
@@ -189,7 +192,7 @@ class StyleManager {
 			}
 		}
 		$fragment->create('link', array(
-			'href' => $this->path . '/generated/styles/' . $md5 . $extension,
+			'href' => $this->baseUri . '/generated/styles/' . $md5 . $extension,
 			'rel' => 'stylesheet',
 			'type' => 'text/css'
 		));
