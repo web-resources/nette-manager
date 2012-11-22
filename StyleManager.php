@@ -160,11 +160,15 @@ class StyleManager {
 			if (!file_exists($style->filename)) {
 				throw new \Exception("Missing style '$style->name' file '$style->filename'.");
 			}
-			$command = array( 'lessc', escapeshellarg($style->filename) );
-			if ($this->useMinified) {
-				$command[] = '-compress';
+			if ($this->useMinified || 'less' == strtolower(pathinfo($style->filename, PATHINFO_EXTENSION))) {
+				$command = array( 'lessc', escapeshellarg($style->filename) );
+				if ($this->useMinified) {
+					$command[] = '-compress';
+				}
+				$contents = shell_exec(implode(' ', $command));
+			} else {
+				$contents = file_get_contents($script->filename);
 			}
-			$contents = shell_exec(implode(' ', $command));
 			$contents = preg_replace_callback('/url\(([^)]+)\)/i', function ($matches) use ($style, $output, $md5, $extension) {
 				$url = trim($matches[1], '\'"');
 				$dir = substr($output, 0, -strlen($extension));
