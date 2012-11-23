@@ -172,9 +172,6 @@ class StyleManager {
 		}
 		$output = $dir . '/' . $md5 . $extension;
 		if (!file_exists($output)) {
-			if (!is_dir($dir)) {
-				mkdir($dir, 0755, TRUE);
-			}
 			if ($this->useMinified || 'less' == strtolower(pathinfo($style->filename, PATHINFO_EXTENSION))) {
 				$command = array( 'lessc', escapeshellarg($style->filename) );
 				if ($this->useMinified) {
