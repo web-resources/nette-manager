@@ -16,6 +16,10 @@ class StyleManager {
 	public function __construct($styles)
 	{
 		$this->styles = $styles;
+		$this->processors = array(
+			new Style\StaticProcessor,
+			new Style\LessProcessor,
+		);
 	}
 
 	public function setRequired($styles)
@@ -164,49 +168,67 @@ class StyleManager {
 			$style->printed = TRUE;
 			return $fragment;
 		}
-		$md5 = md5_file($style->filename);
+		$filename = $this->generateFile($style);
+		$fragment->create('link', array(
+			'href' => $this->baseUri . '/' . $this->path . '/' . $filename,
+			'rel' => 'stylesheet',
+			'type' => 'text/css'
+		));
+		$style->printed = TRUE;
+		return $fragment;
+	}
+
+	private function generateFile($style)
+	{
+		$source = $style->filename;
+		$md5 = md5_file($source);
 		$dir = $this->outputDirectory;
 		$extension = '.css';
 		if ($this->useMinified) {
 			$extension = '.min' . $extension;
 		}
-		$output = $dir . '/' . $md5 . $extension;
+		$filename = $md5 . $extension;
+		$output = $dir . '/' . $filename;
 		if (!file_exists($output)) {
-			if ($this->useMinified || 'less' == strtolower(pathinfo($style->filename, PATHINFO_EXTENSION))) {
-				$command = array( 'lessc', escapeshellarg($style->filename) );
-				if ($this->useMinified) {
-					$command[] = '-compress';
-				}
-				$contents = shell_exec(implode(' ', $command));
-			} else {
-				$contents = file_get_contents($script->filename);
-			}
-			$contents = preg_replace_callback('/url\(([^)]+)\)/i', function ($matches) use ($style, $output, $md5, $extension) {
-				$url = trim($matches[1], '\'"');
-				$dir = substr($output, 0, -strlen($extension));
-				$resource = $url;
-				while ('../' == substr($resource, 0, 3)) {
-					$resource = substr($resource, 3);
-				}
-				if (!is_dir($dir . '/' . dirname($resource))) {
-					mkdir($dir . '/' . dirname($resource), 0755, TRUE);
-				}
-				copy(dirname($style->filename) . '/' . $url, $dir . '/' . $resource);
-				return 'url(' . $md5 . '/' . $resource . ')';
-			}, $contents);
+			$processor = $this->getProcessor($source);
+			$contents = $processor->process($source, $this->useMinified);
+			$contents = $this->copyContentsResources($contents, $source, $dir . '/' . $md5);
 			file_put_contents($output, $contents);
 			if ($this->generateGzipFile) {
 				file_put_contents($output . '.gz', gzencode($contents));
 				touch($output . '.gz', filemtime($output));
 			}
 		}
-		$fragment->create('link', array(
-			'href' => $this->baseUri . '/' . $this->path . '/' . $md5 . $extension,
-			'rel' => 'stylesheet',
-			'type' => 'text/css'
-		));
-		$style->printed = TRUE;
-		return $fragment;
+		return $filename;
+	}
+
+	private function getProcessor($filename)
+	{
+		foreach ($this->processors as $processor) {
+			if ($this->useMinified && !$processor->canCompress()) {
+				continue;
+			}
+			if ($processor->isSupported($filename)) {
+				return $processor;
+			}
+		}
+		throw new \Exception("There is no available processor for '$filename' (compression: " . ($this->useMinified ? 'required' : '') . ').');
+	}
+
+	private function copyContentsResources($contents, $source, $targetDir)
+	{
+		$target = basename($targetDir);
+		$sourceDir = dirname($source);
+		return preg_replace_callback('/url\(([^)]+)\)/i', function ($matches) use ($sourceDir, $target, $targetDir) {
+			$url = trim($matches[1], '\'"');
+			$resource = preg_replace('/^(\.\.\/)+/', '', $url);
+			$resourceDir = $targetDir . '/' . dirname($resource);
+			if (!is_dir($resourceDir)) {
+				mkdir($resourceDir, 0755, TRUE);
+			}
+			copy($sourceDir . '/' . $url, $targetDir . '/' . $resource);
+			return 'url(' . $target . '/' . $resource . ')';
+		}, $contents);
 	}
 
 	private function addStyleDependenciesToQueue($style)
