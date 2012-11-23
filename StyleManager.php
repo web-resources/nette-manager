@@ -154,6 +154,10 @@ class StyleManager {
 
 	private function outputStyle($style)
 	{
+		if (!file_exists($style->filename)) {
+			throw new \Exception("Missing style '$style->name' file '$style->filename'.");
+		}
+
 		$fragment = Html::el();
 		if (!empty($style->include)) {
 			$fragment->create('style', array('type' => 'text/css'))->setText(file_get_contents($style->filename));
@@ -170,9 +174,6 @@ class StyleManager {
 		if (!file_exists($output)) {
 			if (!is_dir($dir)) {
 				mkdir($dir, 0755, TRUE);
-			}
-			if (!file_exists($style->filename)) {
-				throw new \Exception("Missing style '$style->name' file '$style->filename'.");
 			}
 			if ($this->useMinified || 'less' == strtolower(pathinfo($style->filename, PATHINFO_EXTENSION))) {
 				$command = array( 'lessc', escapeshellarg($style->filename) );
