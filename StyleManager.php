@@ -19,6 +19,7 @@ class StyleManager {
 		$this->processors = array(
 			new Style\StaticProcessor,
 			new Style\LessProcessor,
+			new Style\SassProcessor,
 		);
 	}
 
