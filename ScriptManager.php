@@ -104,9 +104,9 @@ class ScriptManager {
 	private function outputTranslations()
 	{
 		$script = Html::el('script', array('type' => 'text/javascript'));
-		$contents = "var translations = typeof translations == 'undefined' ? {} : translations;\n";
+		$contents = "\nvar translations = typeof translations == 'undefined' ? {} : translations;\n";
 		foreach (array_unique($this->translations) as $message) {
-			$contents .= 'translations[' . json_encode($text) . '] = ' . json_encode($this->translator ? $this->translator->translate($text) : $text) . ";\n";
+			$contents .= 'translations[' . json_encode($message) . '] = ' . json_encode($this->translator ? $this->translator->translate($message) : $message) . ";\n";
 		}
 		$script->setText($contents);
 		return $script;
