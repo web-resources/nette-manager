@@ -49,20 +49,48 @@ class ScriptManager {
 		return $this;
 	}
 
+	private $generateGzipFile = FALSE;
+
+	public function setGenerateGzipFile($use)
+	{
+		$this->generateGzipFile = $use;
+		return $this;
+	}
+
+	private $outputDirectory;
+
+	public function setOutputDirectory($dir)
+	{
+		if (is_dir($dir) && is_writable($dir)) {
+			$this->outputDirectory = $dir;
+		} else {
+			throw new \Exception("Output directory must be writable directory.");
+		}
+	}
+
 	private $path;
 
 	/**
-	 * Set server path to scripts
+	 * Set path to styles relative to baseUri
 	 *
 	 * @param string $path
 	 */
 	public function setPath($path)
 	{
-		$this->path = $path;
+		$this->path = rtrim($path, '/');
 		return $this;
 	}
 
+	private $compressCommand;
+
+	public function setCompressCommand($command)
+	{
+		$this->compressCommand = $command;
+	}
+
 	private $presenter;
+
+	private $baseUri;
 
 	/**
 	 * Set presenter (is passed to script config)
@@ -72,6 +100,7 @@ class ScriptManager {
 	public function setPresenter($presenter)
 	{
 		$this->presenter = $presenter;
+		$this->baseUri = rtrim($presenter->getContext()->getService('httpRequest')->getUrl()->getBaseUrl(), '/');
 		return $this;
 	}
 
@@ -165,24 +194,17 @@ class ScriptManager {
 
 	private function outputScript($script)
 	{
-		if ($this->usePublic && isset($script->public)) {
-			$filename = $script->public;
-		} elseif (isset($script->minified) && ($this->useMinified || !isset($script->filename))) {
-			$filename = $script->minified;
-		} elseif (isset($script->filename)) {
-			$filename = $script->filename;
-		} else {
-			throw new \Exception("Script '$script->name' is missing filename or its minified version.");
-		}
 		$fragment = Html::el();
 		if (isset($script->translations)) {
 			$this->translations = array_merge($this->translations, $script->translations);
 		}
+
+		$filename = $this->generateFile($script);
 		if (!empty($script->include)) {
-			$fragment->create('script', array('type' => 'text/javascript'))->setText(file_get_contents(WWW_DIR . '/js/' . $filename));
+			$fragment->create('script', array('type' => 'text/javascript'))->setText(file_get_contents($filename));
 		} else {
 			$fragment->create('script', array(
-				'src' => parse_url($filename, PHP_URL_SCHEME) || substr($filename, 0, 2) === '//' ? $filename : $this->path . '/' . $filename,
+				'src' => parse_url($filename, PHP_URL_SCHEME) || substr($filename, 0, 2) === '//' ? $filename : $this->baseUri . '/' . $this->path . '/' . $filename,
 				'type' => 'text/javascript'
 			));
 		}
@@ -204,6 +226,48 @@ class ScriptManager {
 		}
 		$script->printed = TRUE;
 		return $fragment;
+	}
+
+	private function generateFile($script)
+	{
+		$usedMinified = FALSE;
+		if ($this->usePublic && isset($script->public)) {
+			return $script->public;
+		} elseif (isset($script->minified) && $this->useMinified || !isset($script->filename)) {
+			$usedMinified = TRUE;
+			$filename = $script->minified;
+		} elseif (isset($script->filename)) {
+			$filename = $script->filename;
+		} else {
+			throw new \Exception("Script '$script->name' is missing filename or its minified version.");
+		}
+		$md5 = md5_file($filename);
+		$dir = $this->outputDirectory;
+		$extension = '.js';
+		if ($this->useMinified && $this->compressCommand !== NULL || $usedMinified) {
+			$extension = '.min' . $extension;
+		}
+		$outputFilename = $md5 . $extension;
+		$output = $dir . '/' . $outputFilename;
+		if (!file_exists($output)) {
+			$contents = NULL;
+			if ($usedMinified) {
+				copy($filename, $output);
+			} elseif ($this->useMinified && $this->compressCommand !== NULL) {
+				$contents = shell_exec(sprintf($this->compressCommand, escapeshellarg($filename)));
+				file_put_contents($output, $contents);
+			} else {
+				copy($filename, $output);
+			}
+			if ($this->generateGzipFile) {
+				if (NULL === $contents) {
+					$contents = file_get_contents($output);
+				}
+				file_put_contents($output . '.gz', gzencode($contents));
+				touch($output . '.gz', filemtime($output));
+			}
+		}
+		return $outputFilename;
 	}
 
 	private function addScriptDependenciesToQueue($script)

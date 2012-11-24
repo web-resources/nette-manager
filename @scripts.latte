@@ -1,7 +1,6 @@
 {default $scripts = []}
 {default $scriptVariables = []}
 {$presenter->context->getService('resources.scriptManager')
-	->setPath($baseUri . '/js')
 	->setPresenter($presenter)
 	->setRequired($scripts)
 	->output()}
