@@ -19,8 +19,8 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 		'usePublic' => FALSE,
 		'useMinified' => FALSE /* parameters['productionMode'] */,
 		'generateGzipFile' => FALSE,
-		'outputDir' => '%wwwDir%/generated',
 		'scriptCompressCommand' => NULL,
+		'outputDir' => '%wwwDir%/assets',
 		'scripts' => array(),
 		'styles' => array()
 	);
@@ -38,16 +38,16 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 		$scriptManager->addSetup('setUsePublic', array($config['usePublic']));
 		$scriptManager->addSetup('setUseMinified', array($config['useMinified']));
 		$scriptManager->addSetup('setGenerateGzipFile', array($config['generateGzipFile']));
-		$scriptManager->addSetup('setOutputDirectory', array(rtrim($config['outputDir'] . '/scripts')));
-		$scriptManager->addSetup('setPath', array('resources/scripts'));
+		$scriptManager->addSetup('setOutputDirectory', array(rtrim($config['outputDir'])));
+		$scriptManager->addSetup('setPath', array('assets'));
 		$scriptManager->addSetup('setCompressCommand', array($config['scriptCompressCommand']));
 
 		$styleManager = $container->addDefinition($this->prefix('styleManager'))
 			->setClass('Mishak\WebResourceManagement\StyleManager', array('styles' => $config['styles']));
 		$styleManager->addSetup('setUseMinified', array($config['useMinified']));
 		$styleManager->addSetup('setGenerateGzipFile', array($config['generateGzipFile']));
-		$styleManager->addSetup('setOutputDirectory', array(rtrim($config['outputDir']) . '/styles'));
-		$styleManager->addSetup('setPath', array('generated/styles'));
+		$styleManager->addSetup('setOutputDirectory', array(rtrim($config['outputDir'])));
+		$styleManager->addSetup('setPath', array('assets'));
 	}
 
 
