@@ -41,6 +41,7 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 		$scriptManager->addSetup('setOutputDirectory', array(rtrim($config['outputDir'])));
 		$scriptManager->addSetup('setPath', array('assets'));
 		$scriptManager->addSetup('setCompressCommand', array($config['scriptCompressCommand']));
+		$scriptManager->addSetup('setTempDirectory', array($container->parameters['tempDir']));
 
 		$styleManager = $container->addDefinition($this->prefix('styleManager'))
 			->setClass('Mishak\WebResourceManagement\StyleManager', array('styles' => $config['styles']));

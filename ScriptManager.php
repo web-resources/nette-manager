@@ -16,7 +16,7 @@ class ScriptManager {
 
 	private $translator;
 
-	public function __construct($scripts, Nette\Localization\ITranslator $translator)
+	public function __construct($scripts, Nette\Localization\ITranslator $translator = NULL)
 	{
 		$this->scripts = $scripts;
 		$this->translator = $translator;
@@ -104,6 +104,13 @@ class ScriptManager {
 		return $this;
 	}
 
+	private $tempDir;
+
+	public function setTempDirectory($dir)
+	{
+		$this->tempDir = $dir;
+	}
+
 	/**
 	 * Holds all translations needed by scripts
 	 * @var array
@@ -135,7 +142,7 @@ class ScriptManager {
 		$script = Html::el('script', array('type' => 'text/javascript'));
 		$contents = "\nvar translations = typeof translations == 'undefined' ? {} : translations;\n";
 		foreach (array_unique($this->translations) as $message) {
-			$contents .= 'translations[' . json_encode($message) . '] = ' . json_encode($this->translator ? $this->translator->translate($message) : $message) . ";\n";
+			$contents .= 'translations[' . json_encode($message) . '] = ' . json_encode(NULL !== $this->translator ? $this->translator->translate($message) : $message) . ";\n";
 		}
 		$script->setText($contents);
 		return $script;
@@ -231,17 +238,30 @@ class ScriptManager {
 	private function generateFile($script)
 	{
 		$usedMinified = FALSE;
+		$multiple = NULL;
+		$filenamePrefix = NULL;
 		if ($this->usePublic && isset($script->public)) {
 			return $script->public;
-		} elseif (isset($script->minified) && $this->useMinified || !isset($script->filename)) {
+		} elseif (isset($script->minified) && $this->useMinified || !isset($script->filename) && !isset($script->multiple)) {
 			$usedMinified = TRUE;
 			$filename = $script->minified;
 		} elseif (isset($script->filename)) {
 			$filename = $script->filename;
+		} elseif (isset($script->multiple)) {
+			$multiple = $script->multiple['files'];
+			$filenamePrefix = $script->multiple['dir'] . '/' . ($script->multiple['prefix'] ?: '');
 		} else {
 			throw new \Exception("Script '$script->name' is missing filename or its minified version.");
 		}
-		$md5 = md5_file($filename);
+		if (NULL !== $multiple) {
+			$hashes = array();
+			foreach ($multiple as $_filename) {
+				$hashes[] = md5_file($filenamePrefix . $_filename);
+			}
+			$md5 = md5(implode(':', $hashes));
+		} else {
+			$md5 = md5_file($filename);
+		}
 		$dir = $this->outputDirectory;
 		$extension = '.js';
 		if ($this->useMinified && $this->compressCommand !== NULL || $usedMinified) {
@@ -251,6 +271,15 @@ class ScriptManager {
 		$output = $dir . '/' . $outputFilename;
 		if (!file_exists($output)) {
 			$contents = NULL;
+			if ($multiple) {
+				$filename = $this->tempDir . '/' . $md5 . '.js';
+				$f = fopen($filename, 'wb');
+				foreach ($multiple as $_filename) {
+					fwrite($f, file_get_contents($filenamePrefix . $_filename));
+					fwrite($f, "\n");
+				}
+				fclose($f);
+			}
 			if ($usedMinified) {
 				copy($filename, $output);
 			} elseif ($this->useMinified && $this->compressCommand !== NULL) {
