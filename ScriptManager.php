@@ -262,6 +262,9 @@ class ScriptManager {
 		} else {
 			$md5 = md5_file($filename);
 		}
+		if (isset($script->copyright)) {
+			$md5 = md5($md5 . ':' . md5($script->copyright));
+		}
 		$dir = $this->outputDirectory;
 		$extension = '.js';
 		if ($this->useMinified && $this->compressCommand !== NULL || $usedMinified) {
@@ -284,14 +287,20 @@ class ScriptManager {
 				copy($filename, $output);
 			} elseif ($this->useMinified && $this->compressCommand !== NULL) {
 				$contents = shell_exec(sprintf($this->compressCommand, escapeshellarg($filename)));
-				file_put_contents($output, $contents);
+				if (!isset($script->copyright)) {
+					file_put_contents($output, $contents);
+				}
 			} else {
 				copy($filename, $output);
 			}
+			if ((isset($script->copyright) || $this->generateGzipFile) && NULL === $contents) {
+				$contents = file_get_contents($output);
+			}
+			if (isset($script->copyright)) {
+				$contents = $script->copyright . "\n" . $contents;
+				file_put_contents($output, $contents);
+			}
 			if ($this->generateGzipFile) {
-				if (NULL === $contents) {
-					$contents = file_get_contents($output);
-				}
 				file_put_contents($output . '.gz', gzencode($contents));
 				touch($output . '.gz', filemtime($output));
 			}
