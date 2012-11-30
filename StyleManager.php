@@ -4,7 +4,7 @@ namespace Mishak\WebResourceManagement;
 
 use Nette\Utils\Html;
 
-class StyleManager {
+class StyleManager implements IStyleManager {
 
 	/**
 	 * Definition of styles

@@ -1,5 +1,5 @@
 {default $styles = []}
-{$presenter->context->getService('resources.styleManager')
+{$presenter->getContext()->getByType('Mishak\WebResourceManagement\IStylesManager')
 	->setPresenter($presenter)
 	->setRequired($styles)
 	->output()}

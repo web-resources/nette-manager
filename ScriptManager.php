@@ -5,7 +5,7 @@ namespace Mishak\WebResourceManagement;
 use Nette,
 	Nette\Utils\Html;
 
-class ScriptManager {
+class ScriptManager implements IScriptManager {
 
 	/**
 	 * Definition of scripts
