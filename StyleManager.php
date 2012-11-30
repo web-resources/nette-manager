@@ -113,30 +113,37 @@ class StyleManager implements IStyleManager {
 	 *
 	 * @var array
 	 */
-	private $required;
+	private $required = array();
 
 	/**
 	 * Map of style dependencies
 	 *
 	 * @var array[$styleName][$dependantName] = $dependant
 	 */
-	private $dependencies;
+	private $dependencies = array();
 
 	/**
 	 * Queue of styles to print
 	 *
 	 * @var array
 	 */
-	private $queue;
+	private $queue = array();
 
 	/**
 	 * Adds style identified by name to required styles
 	 *
 	 * @param string $name
-	 * @return object
+	 * @return self
 	 */
-	private function add($name)
+	public function add($name)
 	{
+		if (is_array($name)) {
+			foreach ($name as $_name) {
+				$this->add($_name);
+			}
+			return $this;
+		}
+
 		if (isset($this->required[$name])) {
 			return $this->required[$name];
 		}

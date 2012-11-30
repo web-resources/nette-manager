@@ -155,21 +155,21 @@ class ScriptManager implements IScriptManager {
 	 *
 	 * @var array
 	 */
-	private $required;
+	private $required = array();
 
 	/**
 	 * Map of script dependencies
 	 *
 	 * @var array[$scriptName][$dependantName] = $dependant
 	 */
-	private $dependencies;
+	private $dependencies = array();
 
 	/**
 	 * Queue of scripts to print
 	 *
 	 * @var array
 	 */
-	private $queue;
+	private $queue = array();
 
 	/**
 	 * Adds script identified by name to required scripts
@@ -177,8 +177,15 @@ class ScriptManager implements IScriptManager {
 	 * @param string $name
 	 * @return object
 	 */
-	private function add($name)
+	public function add($name)
 	{
+		if (is_array($name)) {
+			foreach ($name as $_name) {
+				$this->add($_name);
+			}
+			return $this;
+		}
+
 		if (isset($this->required[$name])) {
 			return $this->required[$name];
 		}
