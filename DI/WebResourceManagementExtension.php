@@ -49,6 +49,11 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 		$styleManager->addSetup('setGenerateGzipFile', array($config['generateGzipFile']));
 		$styleManager->addSetup('setOutputDirectory', array(rtrim($config['outputDir'])));
 		$styleManager->addSetup('setPath', array('assets'));
+
+		// register latte macros
+		$engine = $container->getDefinition('nette.latte');
+		$install = 'Mishak\WebResourceManagement\Latte\Macros::install';
+		$engine->addSetup($install . '(?->compiler)', array('@self'));
 	}
 
 
