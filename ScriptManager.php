@@ -101,6 +101,12 @@ class ScriptManager implements IScriptManager {
 	{
 		$this->presenter = $presenter;
 		$this->baseUri = rtrim($presenter->getContext()->getService('httpRequest')->getUrl()->getBaseUrl(), '/');
+		foreach ($this->scripts as $name => $script)
+		{
+			if (isset($script['component']) && iterator_count($presenter->getComponents(TRUE, $script['component']))) {
+				$this->add($name);
+			}
+		}
 		return $this;
 	}
 
@@ -117,9 +123,17 @@ class ScriptManager implements IScriptManager {
 	 */
 	private $translations = array();
 
+	/**
+	 * List of scripts to be initialized
+	 *
+	 * @var array
+	 */
+	private $initializations = array();
+
 	public function output()
 	{
 		$this->translations = array();
+		$this->initializations = array();
 		$fragment = Html::el();
 		while ($this->queue) {
 			$printed = FALSE;
@@ -133,6 +147,10 @@ class ScriptManager implements IScriptManager {
 		}
 		if ($this->translations) {
 			$fragment->insert(0, $this->outputTranslations());
+		}
+		if ($this->initializations)
+		{
+			$fragment->add($this->outputInitializations());
 		}
 		return $fragment;
 	}
@@ -238,6 +256,13 @@ class ScriptManager implements IScriptManager {
 			$fragment[] = "\n";
 			$fragment->create('script', array('type' => 'text/javascript'))->setText("\n" . implode("\n", $content));
 		}
+		if (!empty($this->presenter->getContext()->parameters['debugMode'])) {
+			$fragment = Html::el()->add($fragment)->add('<!-- ' . $script->name . ' -->');
+		}
+		if (isset($script->init))
+		{
+			$this->initializations[] = $script->name;
+		}
 		$script->printed = TRUE;
 		return $fragment;
 	}
@@ -334,6 +359,28 @@ class ScriptManager implements IScriptManager {
 				}
 			}
 		}
+	}
+
+	private function outputInitializations()
+	{
+		$fragment = Html::el();
+		foreach ($this->initializations as $name)
+		{
+			$type = null;
+			$init = $this->required[$name]->init;
+			if (is_array($init))
+			{
+				$type = $init[0];
+				$init = $init[1];
+			}
+			$format = "<script>\n%s\n</script>\n";
+			if ($type === 'jquery')
+			{
+				$format = sprintf($format, "\$(function(){\n\t%s\n});");
+			}
+			$fragment->add(sprintf($format, $init));
+		}
+		return $fragment;
 	}
 
 }

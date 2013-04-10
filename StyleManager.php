@@ -87,6 +87,12 @@ class StyleManager implements IStyleManager {
 	{
 		$this->presenter = $presenter;
 		$this->baseUri = rtrim($presenter->getContext()->getService('httpRequest')->getUrl()->getBaseUrl(), '/');
+		foreach ($this->styles as $name => $style)
+		{
+			if (isset($style['component']) && iterator_count($presenter->getComponents(TRUE, $style['component']))) {
+				$this->add($name);
+			}
+		}
 		return $this;
 	}
 
@@ -169,7 +175,6 @@ class StyleManager implements IStyleManager {
 		if (!file_exists($style->filename)) {
 			throw new \Exception("Missing style '$style->name' file '$style->filename'.");
 		}
-
 		$fragment = Html::el();
 		if (!empty($style->include)) {
 			$fragment->create('style', array('type' => 'text/css'))->setText(file_get_contents($style->filename));
@@ -183,6 +188,9 @@ class StyleManager implements IStyleManager {
 			'type' => 'text/css'
 		));
 		$style->printed = TRUE;
+		if (!empty($this->presenter->getContext()->parameters['debugMode'])) {
+			$fragment = Html::el()->add($fragment)->add('<!-- ' . $style->name . ' -->');
+		}
 		return $fragment;
 	}
 
