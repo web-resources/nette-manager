@@ -19,16 +19,20 @@ class JsonProvider extends \Nette\Object implements IProvider
 	/** @var object|array */
 	private $data;
 
+	/** @var \WebResources\NetteManager\Providers\ProviderContext */
+	private $context;
+
 
 
 	/**
 	 * @param string
 	 * @param bool
 	 */
-	public function __construct($contents, $isSingle = FALSE)
+	public function __construct($contents, $isSingle, ProviderContext $context)
 	{
 		$this->contents = $contents;
 		$this->isSingle = (bool) $isSingle;
+		$this->context = $context;
 
 		if (FALSE === ($this->data = json_decode($contents))) {
 			throw new Exception("Bad JSON format");
@@ -47,8 +51,9 @@ class JsonProvider extends \Nette\Object implements IProvider
 
 	public function getWebResources()
 	{
-		$singleParser = new SingleParser;
 		$result = array();
+		$singleParser = new SingleParser($this->context);
+
 		if ($this->isSingle) {
 			$result[] = $singleParser->parseObject($this->data);
 

@@ -28,13 +28,17 @@ class ComposerPackageProvider extends \Nette\Object implements IProvider
 	{
 		$result = array();
 		$basePackageDir = $this->projectRoot . '/' . $this->getVendorDir();
+		$context = new ProviderContext($this->projectRoot, array(
+			'vendor-dir' => $basePackageDir,
+		));
+
 		foreach ($this->getInstalledPackages() as $package) {
 			$targetDir = $basePackageDir . '/' . $package->name;
 			if (isset($package->{'target-dir'})) {
 				$targetDir .= '/' . $package->{'target-dir'};
 			}
 
-			$directoryProvider = new DirectoryProvider($targetDir);
+			$directoryProvider = new DirectoryProvider($targetDir, $context);
 			$result = array_merge($result, $directoryProvider->getWebResources());
 		}
 
