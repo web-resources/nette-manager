@@ -1,20 +1,16 @@
 <?php
 
-namespace Mishak\WebResourceManagement\DI;
+namespace WebResources\NetteManager\DI;
 
-use Nette;
+use Nette\Config\CompilerExtension;
 use Nette\Config\Configurator;
 use Nette\Config\Compiler;
-use Nette\DI\ContainerBuilder;
-use Nette\DI\Statement;
-use Nette\Utils\Validators;
 
-class WebResourceManagementExtension extends Nette\Config\CompilerExtension
+
+
+class WebResourcesExtension extends CompilerExtension
 {
 
-	/**
-	 * @var array
-	 */
 	public $defaults = array(
 		'usePublic' => FALSE,
 		'useMinified' => FALSE /* parameters['productionMode'] */,
@@ -34,7 +30,7 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 		$config = $this->getConfig($this->defaults);
 
 		$scriptManager = $container->addDefinition($this->prefix('scriptManager'))
-			->setClass('Mishak\WebResourceManagement\ScriptManager', array('scripts' => $config['scripts']));
+			->setClass('WebResources\NetteManager\ScriptManager', array('scripts' => $config['scripts']));
 		$scriptManager->addSetup('setUsePublic', array($config['usePublic']));
 		$scriptManager->addSetup('setUseMinified', array($config['useMinified']));
 		$scriptManager->addSetup('setGenerateGzipFile', array($config['generateGzipFile']));
@@ -44,7 +40,7 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 		$scriptManager->addSetup('setTempDirectory', array($container->parameters['tempDir']));
 
 		$styleManager = $container->addDefinition($this->prefix('styleManager'))
-			->setClass('Mishak\WebResourceManagement\StyleManager', array('styles' => $config['styles']));
+			->setClass('WebResources\NetteManager\StyleManager', array('styles' => $config['styles']));
 		$styleManager->addSetup('setUseMinified', array($config['useMinified']));
 		$styleManager->addSetup('setGenerateGzipFile', array($config['generateGzipFile']));
 		$styleManager->addSetup('setOutputDirectory', array(rtrim($config['outputDir'])));
@@ -52,7 +48,7 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 
 		// register latte macros
 		$engine = $container->getDefinition('nette.latte');
-		$install = 'Mishak\WebResourceManagement\Latte\Macros::install';
+		$install = 'WebResources\NetteManager\Latte\Macros::install';
 		$engine->addSetup($install . '(?->compiler)', array('@self'));
 	}
 
@@ -64,7 +60,7 @@ class WebResourceManagementExtension extends Nette\Config\CompilerExtension
 	public static function register(Configurator $config)
 	{
 		$config->onCompile[] = function (Configurator $config, Compiler $compiler) {
-			$compiler->addExtension('resources', new WebResourceManagementExtension);
+			$compiler->addExtension('web-resources', new WebResourcesExtension);
 		};
 	}
 

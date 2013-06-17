@@ -1,5 +1,8 @@
 <?php
 
-namespace Mishak\WebResourceManagement;
+namespace WebResources\NetteManager;
 
-interface IStyleManager { }
+interface IStyleManager
+{
+
+}

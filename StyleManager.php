@@ -1,10 +1,13 @@
 <?php
 
-namespace Mishak\WebResourceManagement;
+namespace WebResources\NetteManager;
 
 use Nette\Utils\Html;
 
-class StyleManager implements IStyleManager {
+
+
+class StyleManager implements IStyleManager
+{
 
 	/**
 	 * Definition of styles
@@ -12,6 +15,8 @@ class StyleManager implements IStyleManager {
 	 * @var array
 	 */
 	private $styles = array();
+
+
 
 	public function __construct($styles)
 	{
@@ -22,6 +27,8 @@ class StyleManager implements IStyleManager {
 			new Style\SassProcessor,
 		);
 	}
+
+
 
 	public function setRequired($styles)
 	{
@@ -34,6 +41,8 @@ class StyleManager implements IStyleManager {
 		return $this;
 	}
 
+
+
 	private $useMinified = FALSE;
 
 	public function setUseMinified($use)
@@ -42,6 +51,8 @@ class StyleManager implements IStyleManager {
 		return $this;
 	}
 
+
+
 	private $generateGzipFile = FALSE;
 
 	public function setGenerateGzipFile($use)
@@ -49,6 +60,8 @@ class StyleManager implements IStyleManager {
 		$this->generateGzipFile = $use;
 		return $this;
 	}
+
+
 
 	private $outputDirectory;
 
@@ -60,6 +73,8 @@ class StyleManager implements IStyleManager {
 			throw new \Exception("Output directory must be writable directory.");
 		}
 	}
+
+
 
 	private $path;
 
@@ -73,6 +88,8 @@ class StyleManager implements IStyleManager {
 		$this->path = rtrim($path, '/');
 		return $this;
 	}
+
+
 
 	private $presenter;
 
@@ -96,11 +113,12 @@ class StyleManager implements IStyleManager {
 		return $this;
 	}
 
+
+
 	public function output()
 	{
 		$fragment = Html::el();
 		while ($this->queue) {
-			$printed = FALSE;
 			$styles = $this->queue;
 			$this->queue = array();
 			foreach ($styles as $style) {
@@ -112,7 +130,7 @@ class StyleManager implements IStyleManager {
 		return $fragment;
 	}
 
-	private $minified = TRUE;
+
 
 	/**
 	 * All required styles
@@ -167,8 +185,11 @@ class StyleManager implements IStyleManager {
 		if (!$style->depends) {
 			$this->queue[] = $style;
 		}
+
 		return $this->required[$name] = $style;
 	}
+
+
 
 	private function outputStyle($style)
 	{
@@ -191,8 +212,11 @@ class StyleManager implements IStyleManager {
 		if (!empty($this->presenter->getContext()->parameters['debugMode'])) {
 			$fragment = Html::el()->add($fragment)->add('<!-- ' . $style->name . ' -->');
 		}
+
 		return $fragment;
 	}
+
+
 
 	private function generateFile($style)
 	{
@@ -215,8 +239,11 @@ class StyleManager implements IStyleManager {
 				touch($output . '.gz', filemtime($output));
 			}
 		}
+
 		return $filename;
 	}
+
+
 
 	private function getProcessor($filename)
 	{
@@ -235,6 +262,7 @@ class StyleManager implements IStyleManager {
 	{
 		$target = basename($targetDir);
 		$sourceDir = dirname($source);
+
 		return preg_replace_callback('/url\(([^)]+)\)/i', function ($matches) use ($sourceDir, $target, $targetDir) {
 			$url = trim($matches[1], '\'"');
 			$resource = preg_replace('/^(\.\.\/)+/', '', $url);
@@ -243,6 +271,7 @@ class StyleManager implements IStyleManager {
 				mkdir($resourceDir, 0755, TRUE);
 			}
 			copy($sourceDir . '/' . $url, $targetDir . '/' . $resource);
+
 			return 'url(' . $target . '/' . $resource . ')';
 		}, $contents);
 	}

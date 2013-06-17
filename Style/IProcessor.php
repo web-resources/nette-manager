@@ -1,8 +1,11 @@
 <?php
 
-namespace Mishak\WebResourceManagement\Style;
+namespace WebResources\NetteManager\Style;
 
-interface IProcessor {
+
+
+interface IProcessor
+{
 
 	/**
 	 * @param string $filename

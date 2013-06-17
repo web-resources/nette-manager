@@ -1,5 +1,10 @@
 <?php
 
-namespace Mishak\WebResourceManagement;
+namespace WebResources\NetteManager;
 
-interface IScriptManager { }
+
+
+interface IScriptManager
+{
+
+}

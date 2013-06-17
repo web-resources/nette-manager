@@ -1,6 +1,6 @@
 {default $scripts = []}
 {default $scriptVariables = []}
-{$presenter->getContext()->getByType('Mishak\WebResourceManagement\IScriptManager')
+{$presenter->getContext()->getByType('WebResources\NetteManager\IScriptManager')
 	->setPresenter($presenter)
 	->setRequired($scripts)
 	->output()}

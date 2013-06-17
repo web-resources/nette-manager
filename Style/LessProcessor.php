@@ -1,19 +1,27 @@
 <?php
 
-namespace Mishak\WebResourceManagement\Style;
+namespace WebResources\NetteManager\Style;
 
-class LessProcessor implements IProcessor {
+
+
+class LessProcessor implements IProcessor
+{
 
 	public function isSupported($filename)
 	{
 		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
 		return in_array($ext, array('less', 'css'));
 	}
+
+
 
 	public function canCompress()
 	{
 		return TRUE;
 	}
+
+
 
 	public function process($filename, $compress)
 	{
@@ -21,6 +29,7 @@ class LessProcessor implements IProcessor {
 		if ($compress) {
 			$command .= ' -compress';
 		}
+
 		return shell_exec($command);
 	}
 

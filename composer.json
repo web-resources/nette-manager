@@ -1,7 +1,7 @@
 {
-	"name": "mishak/web-resource-management",
-	"description": "Tools for management of scripts and styles (using Nette Framework)",
-	"keywords": [ "nette", "scripts", "style", "resource", "dependency", "manager"],
+	"name": "web-resources/nette-manager",
+	"description": "Tools for managing of web resources under Nette Framework",
+	"keywords": [ "nette", "scripts", "style", "resource", "manager"],
 	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"authors": [
 		{
@@ -13,10 +13,10 @@
 	],
 	"autoload":{
 		"psr-0":{
-			"Mishak\\WebResourceManagement":""
+			"WebResources\\NetteManager":""
 		}
 	},
-	"target-dir": "Mishak/WebResourceManagement",
+	"target-dir": "WebResources/NetteManager",
 	"require": {
 		"php": ">=5.3.0",
 		"nette/nette": ">=2.0.7"

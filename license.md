@@ -1,7 +1,7 @@
 Licenses
 ========
 
-Old news! You may use Web Resource Management under the terms of either
+Old news! You may use Web Resources under the terms of either
 the New BSD License or the GNU General Public License (GPL) version 2 or 3.
 
 The BSD License is recommended for most projects. It is easy to understand and it
@@ -17,7 +17,7 @@ remains intact.
 New BSD License
 ---------------
 
-Copyright (c) 2012 Michal Gebauer (https://mishak.net)
+Copyright (c) 2013 Michal Gebauer (https://mishak.net)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,

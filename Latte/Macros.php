@@ -1,21 +1,22 @@
 <?php
 
-namespace Mishak\WebResourceManagement\Latte;
+namespace WebResources\NetteManager\Latte;
 
-use Nette;
-use Nette\Forms\Form;
-use Nette\Latte;
+use Nette\Latte\Compiler;
+use Nette\Latte\Macros\MacroSet;
 use Nette\Latte\PhpWriter;
 use Nette\Latte\MacroNode;
 
-class Macros extends Latte\Macros\MacroSet
+
+
+class Macros extends MacroSet
 {
 
 	/**
 	 * @param \Nette\Latte\Compiler $compiler
 	 * @return \Nette\Latte\Macros\MacroSet|void
 	 */
-	public static function install(Latte\Compiler $compiler)
+	public static function install(Compiler $compiler)
 	{
 		$me = new static($compiler);
 
@@ -34,7 +35,7 @@ class Macros extends Latte\Macros\MacroSet
 	 */
 	public function macroScripts(MacroNode $node, PhpWriter $writer)
 	{
-		$output = $writer->write('echo $presenter->getContext()->getByType(%var)->setPresenter($presenter)', 'Mishak\WebResourceManagement\IScriptManager');
+		$output = $writer->write('echo $presenter->getContext()->getByType(%var)->setPresenter($presenter)', 'WebResources\NetteManager\IScriptManager');
 		if ($node->tokenizer->hasNext()) {
 			$output .= $writer->write('->add(%node.array)');
 		}
@@ -50,7 +51,7 @@ class Macros extends Latte\Macros\MacroSet
 	 */
 	public function macroStyles(MacroNode $node, PhpWriter $writer)
 	{
-		$output = $writer->write('echo $presenter->getContext()->getByType(%var)->setPresenter($presenter)', 'Mishak\WebResourceManagement\IStyleManager');
+		$output = $writer->write('echo $presenter->getContext()->getByType(%var)->setPresenter($presenter)', 'WebResources\NetteManager\IStyleManager');
 		if ($node->tokenizer->hasNext()) {
 			$output .= $writer->write('->add(%node.array)');
 		}
@@ -66,7 +67,7 @@ class Macros extends Latte\Macros\MacroSet
 	 */
 	public function macroScript(MacroNode $node, PhpWriter $writer)
 	{
-		return $writer->write('$presenter->getContext()->getByType(%var)->add(%node.array)', 'Mishak\WebResourceManagement\IScriptManager');
+		return $writer->write('$presenter->getContext()->getByType(%var)->add(%node.array)', 'WebResources\NetteManager\IScriptManager');
 	}
 
 
@@ -78,7 +79,7 @@ class Macros extends Latte\Macros\MacroSet
 	 */
 	public function macroStyle(MacroNode $node, PhpWriter $writer)
 	{
-		return $writer->write('$presenter->getContext()->getByType(%var)->add(%node.array)', 'Mishak\WebResourceManagement\IStyleManager');
+		return $writer->write('$presenter->getContext()->getByType(%var)->add(%node.array)', 'WebResources\NetteManager\IStyleManager');
 	}
 
 }

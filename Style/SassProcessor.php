@@ -1,19 +1,27 @@
 <?php
 
-namespace Mishak\WebResourceManagement\Style;
+namespace WebResources\NetteManager\Style;
 
-class SassProcessor implements IProcessor {
+
+
+class SassProcessor implements IProcessor
+{
 
 	public function isSupported($filename)
 	{
 		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
 		return in_array($ext, array('sass', 'scss', 'css'));
 	}
+
+
 
 	public function canCompress()
 	{
 		return TRUE;
 	}
+
+
 
 	public function process($filename, $compress)
 	{
@@ -22,6 +30,7 @@ class SassProcessor implements IProcessor {
 			$command .= ' --style compressed';
 		}
 		$command .= ' '  . escapeshellarg($filename);
+
 		return shell_exec($command);
 	}
 

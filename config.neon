@@ -1,5 +1,0 @@
-resources:
-	scripts:
-		netteForms:
-			filename: %libsDir%/nette/nette/client-side/netteForms.js
-			depends: jquery

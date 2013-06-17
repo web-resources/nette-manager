@@ -1,11 +1,14 @@
 <?php
 
-namespace Mishak\WebResourceManagement;
+namespace WebResources\NetteManager;
 
 use Nette,
 	Nette\Utils\Html;
 
-class ScriptManager implements IScriptManager {
+
+
+class ScriptManager implements IScriptManager
+{
 
 	/**
 	 * Definition of scripts
@@ -14,13 +17,18 @@ class ScriptManager implements IScriptManager {
 	 */
 	private $scripts = array();
 
+	/** @var \Nette\Localization\ITranslator */
 	private $translator;
+
+
 
 	public function __construct($scripts, Nette\Localization\ITranslator $translator = NULL)
 	{
 		$this->scripts = $scripts;
 		$this->translator = $translator;
 	}
+
+
 
 	private $usePublic = FALSE;
 
@@ -30,6 +38,8 @@ class ScriptManager implements IScriptManager {
 		return $this;
 	}
 
+
+
 	private $useMinified = FALSE;
 
 	public function setUseMinified($use)
@@ -37,6 +47,8 @@ class ScriptManager implements IScriptManager {
 		$this->useMinified = $use;
 		return $this;
 	}
+
+
 
 	public function setRequired($scripts)
 	{
@@ -49,6 +61,8 @@ class ScriptManager implements IScriptManager {
 		return $this;
 	}
 
+
+
 	private $generateGzipFile = FALSE;
 
 	public function setGenerateGzipFile($use)
@@ -56,6 +70,8 @@ class ScriptManager implements IScriptManager {
 		$this->generateGzipFile = $use;
 		return $this;
 	}
+
+
 
 	private $outputDirectory;
 
@@ -67,6 +83,8 @@ class ScriptManager implements IScriptManager {
 			throw new \Exception("Output directory must be writable directory.");
 		}
 	}
+
+
 
 	private $path;
 
@@ -81,12 +99,16 @@ class ScriptManager implements IScriptManager {
 		return $this;
 	}
 
+
+
 	private $compressCommand;
 
 	public function setCompressCommand($command)
 	{
 		$this->compressCommand = $command;
 	}
+
+
 
 	private $presenter;
 
@@ -107,8 +129,11 @@ class ScriptManager implements IScriptManager {
 				$this->add($name);
 			}
 		}
+
 		return $this;
 	}
+
+
 
 	private $tempDir;
 
@@ -116,6 +141,8 @@ class ScriptManager implements IScriptManager {
 	{
 		$this->tempDir = $dir;
 	}
+
+
 
 	/**
 	 * Holds all translations needed by scripts
@@ -154,6 +181,8 @@ class ScriptManager implements IScriptManager {
 		return $fragment;
 	}
 
+
+
 	private function outputTranslations()
 	{
 		$script = Html::el('script', array('type' => 'text/javascript'));
@@ -162,10 +191,11 @@ class ScriptManager implements IScriptManager {
 			$contents .= 'translations[' . json_encode($message) . '] = ' . json_encode(NULL !== $this->translator ? $this->translator->translate($message) : $message) . ";\n";
 		}
 		$script->setText($contents);
+
 		return $script;
 	}
 
-	private $minified = TRUE;
+
 
 	/**
 	 * All required scripts
@@ -223,6 +253,8 @@ class ScriptManager implements IScriptManager {
 		return $this->required[$name] = $script;
 	}
 
+
+
 	private function outputScript($script)
 	{
 		$fragment = Html::el();
@@ -263,6 +295,7 @@ class ScriptManager implements IScriptManager {
 			$this->initializations[] = $script->name;
 		}
 		$script->printed = TRUE;
+
 		return $fragment;
 	}
 
@@ -336,8 +369,11 @@ class ScriptManager implements IScriptManager {
 				touch($output . '.gz', filemtime($output));
 			}
 		}
+
 		return $outputFilename;
 	}
+
+
 
 	private function addScriptDependenciesToQueue($script)
 	{
@@ -360,6 +396,8 @@ class ScriptManager implements IScriptManager {
 		}
 	}
 
+
+
 	private function outputInitializations()
 	{
 		$fragment = Html::el();
@@ -379,6 +417,7 @@ class ScriptManager implements IScriptManager {
 			}
 			$fragment->add(sprintf($format, $init));
 		}
+
 		return $fragment;
 	}
 

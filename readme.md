@@ -1,20 +1,20 @@
-Web Resource Management for Nette Framework
+Web Resources not only for Nette Framework
 ===========================================
 
-Main purpose is to simplify resource management of scripts and styles by moving their definition to configs (of modules) and automated generating of content.
+Main purpose is to simplify management of scripts and styles by moving their definition to configs (of modules) and supporting automated generation of content.
 
 **EXPERIMENTAL!** **BC breaks might occur.** This is still more of a draft then proper code so please bear with me.
 
 ## Installation
 
-Add to your `composer.json` requirement `"mishak/web-resource-management": "dev-master"`.
-Directory `%WWW_DIR%/generated` must be writable by server. Scripts must be under `%WWW_DIR%/js` directory for now.
+Add to your `composer.json` requirement `"web-resources/nette-manager": "dev-master"`.
+Directory `%WWW_DIR%/assets` must be writable by server (can be changed in config).
 
 ### Bootstrap
 
 	$configurator = new Nette\Config\Configurator;
 	// after the line above
-	Mishak\WebResourceManagement\DI\WebResourceManagementExtension::register($configurator);
+	WebResources\NetteManager\DI\WebResourcesExtension::register($configurator);
 	// before the line bellow
 	$container = $configurator->createContainer();
 
@@ -22,12 +22,12 @@ Directory `%WWW_DIR%/generated` must be writable by server. Scripts must be unde
 
 	<head>
 		...
-		{include ../../libs/mishak/web-resource-management/@styles.latte}
+		{include ../../libs/web-resources/nette-manager/@styles.latte}
 	</head>
 
 	<body>
 		...
-		{include ../../libs/mishak/web-resource-management/@scripts.latte}
+		{include ../../libs/web-resources/nette-manager/@scripts.latte}
 	</body>
 
 ## Capabilities
