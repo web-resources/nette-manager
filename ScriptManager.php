@@ -136,7 +136,6 @@ class ScriptManager implements IScriptManager {
 		$this->initializations = array();
 		$fragment = Html::el();
 		while ($this->queue) {
-			$printed = FALSE;
 			$scripts = $this->queue;
 			$this->queue = array();
 			foreach ($scripts as $script) {
