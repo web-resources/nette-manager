@@ -2,7 +2,7 @@
 
 namespace WebResources\NetteManager\DI;
 
-use Nette\Config\CompilerExtension;
+use Nette\DI\CompilerExtension;
 use Nette\Config\Configurator;
 use Nette\Config\Compiler;
 

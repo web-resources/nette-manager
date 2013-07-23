@@ -27,7 +27,6 @@ class Macros extends MacroSet
 	}
 
 
-
 	/**
 	 * @param \Nette\Latte\MacroNode $node
 	 * @param \Nette\Latte\PhpWriter $writer
@@ -36,12 +35,12 @@ class Macros extends MacroSet
 	public function macroScripts(MacroNode $node, PhpWriter $writer)
 	{
 		$output = $writer->write('echo $presenter->getContext()->getByType(%var)->setPresenter($presenter)', 'WebResources\NetteManager\IScriptManager');
-		if ($node->tokenizer->hasNext()) {
+		if ($node->tokenizer->isNext()) {
 			$output .= $writer->write('->add(%node.array)');
 		}
+
 		return $output . $writer->write('->output()');
 	}
-
 
 
 	/**
@@ -52,12 +51,12 @@ class Macros extends MacroSet
 	public function macroStyles(MacroNode $node, PhpWriter $writer)
 	{
 		$output = $writer->write('echo $presenter->getContext()->getByType(%var)->setPresenter($presenter)', 'WebResources\NetteManager\IStyleManager');
-		if ($node->tokenizer->hasNext()) {
+		if ($node->tokenizer->isNext()) {
 			$output .= $writer->write('->add(%node.array)');
 		}
+
 		return $output . $writer->write('->output()');
 	}
-
 
 
 	/**
@@ -69,7 +68,6 @@ class Macros extends MacroSet
 	{
 		return $writer->write('$presenter->getContext()->getByType(%var)->add(%node.array)', 'WebResources\NetteManager\IScriptManager');
 	}
-
 
 
 	/**
