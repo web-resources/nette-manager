@@ -11,12 +11,11 @@
 			"role": "developer"
 		}
 	],
-	"autoload":{
-		"psr-0":{
-			"WebResources\\NetteManager":"src/"
+	"autoload": {
+		"psr-0": {
+			"WebResources\\NetteManager\\": "src/"
 		}
 	},
-	"target-dir": "WebResources/NetteManager",
 	"require": {
 		"php": ">=5.3.0",
 		"nette/nette": "@dev"
