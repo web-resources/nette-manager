@@ -268,7 +268,9 @@ class StyleManager implements IStyleManager
 		$sourceDir = dirname($source);
 
 		return preg_replace_callback('/url\(([^)]+)\)/i', function ($matches) use ($sourceDir, $target, $targetDir) {
-			$url = trim($matches[1], '\'"');
+			preg_match('/^([^?#]*)(.*)$/', trim($matches[1], '\'"'), $matches);
+			$url = $matches[1];
+			$suffix = isset($matches[2]) ? $matches[2] : '';
 			$resource = preg_replace('/^(\.\.\/)+/', '', $url);
 			$resourceDir = $targetDir . '/' . dirname($resource);
 			if (!is_dir($resourceDir)) {
@@ -276,7 +278,7 @@ class StyleManager implements IStyleManager
 			}
 			copy($sourceDir . '/' . $url, $targetDir . '/' . $resource);
 
-			return 'url(' . $target . '/' . $resource . ')';
+			return 'url(' . $target . '/' . $resource . $suffix . ')';
 		}, $contents);
 	}
 
