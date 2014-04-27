@@ -262,14 +262,16 @@ class ScriptManager implements IScriptManager
 			$this->translations = array_merge($this->translations, $script->translations);
 		}
 
-		$filename = $this->generateFile($script);
-		if (!empty($script->include)) {
-			$fragment->create('script', array('type' => 'text/javascript'))->setText(file_get_contents($filename));
-		} else {
-			$fragment->create('script', array(
-				'src' => parse_url($filename, PHP_URL_SCHEME) || substr($filename, 0, 2) === '//' ? $filename : $this->baseUri . '/' . $this->path . '/' . $filename,
-				'type' => 'text/javascript'
-			));
+		if (!isset($script->placeholder)) {
+			$filename = $this->generateFile($script);
+			if (!empty($script->include)) {
+				$fragment->create('script', array('type' => 'text/javascript'))->setText(file_get_contents($filename));
+			} else {
+				$fragment->create('script', array(
+					'src' => parse_url($filename, PHP_URL_SCHEME) || substr($filename, 0, 2) === '//' ? $filename : $this->baseUri . '/' . $this->path . '/' . $filename,
+					'type' => 'text/javascript'
+				));
+			}
 		}
 		if (isset($script->config)) {
 			$class = $script->config['class'];

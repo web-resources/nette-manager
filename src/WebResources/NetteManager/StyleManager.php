@@ -193,21 +193,25 @@ class StyleManager implements IStyleManager
 
 	private function outputStyle($style)
 	{
-		if (!file_exists($style->filename)) {
-			throw new \Exception("Missing style '$style->name' file '$style->filename'.");
-		}
 		$fragment = Html::el();
-		if (!empty($style->include)) {
-			$fragment->create('style', array('type' => 'text/css'))->setText(file_get_contents($style->filename));
-			$style->printed = TRUE;
-			return $fragment;
+		if (!isset($style->placeholder)) {
+			if (!file_exists($style->filename)) {
+				throw new \Exception("Missing style '$style->name' file '$style->filename'.");
+			}
+
+			if (!empty($style->include)) {
+				$fragment->create('style', array('type' => 'text/css'))->setText(file_get_contents($style->filename));
+				$style->printed = TRUE;
+				return $fragment;
+			}
+			$filename = $this->generateFile($style);
+			$fragment->create('link', array(
+				'href' => $this->baseUri . '/' . $this->path . '/' . $filename,
+				'rel' => 'stylesheet',
+				'type' => 'text/css'
+			));
 		}
-		$filename = $this->generateFile($style);
-		$fragment->create('link', array(
-			'href' => $this->baseUri . '/' . $this->path . '/' . $filename,
-			'rel' => 'stylesheet',
-			'type' => 'text/css'
-		));
+
 		$style->printed = TRUE;
 		if (!empty($this->presenter->getContext()->parameters['debugMode'])) {
 			$fragment = Html::el()->add($fragment)->add('<!-- ' . $style->name . ' -->');
