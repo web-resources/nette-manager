@@ -2,10 +2,21 @@
 
 namespace WebResources\NetteManager\DI;
 
+use Nette;
+use Nette\DI\Compiler;
 use Nette\DI\CompilerExtension;
-use Nette\Config\Configurator;
-use Nette\Config\Compiler;
 
+
+if (!class_exists('Nette\DI\CompilerExtension')) {
+	class_alias('Nette\Config\CompilerExtension', 'Nette\DI\CompilerExtension');
+	class_alias('Nette\Config\Compiler', 'Nette\DI\Compiler');
+	class_alias('Nette\Config\Helpers', 'Nette\DI\Config\Helpers');
+}
+
+if (isset(Nette\Loaders\NetteLoader::getInstance()->renamed['Nette\Configurator']) || !class_exists('Nette\Configurator')) {
+	unset(Nette\Loaders\NetteLoader::getInstance()->renamed['Nette\Configurator']); // fuck you
+	class_alias('Nette\Config\Configurator', 'Nette\Configurator');
+}
 
 
 class WebResourcesExtension extends CompilerExtension
@@ -47,9 +58,13 @@ class WebResourcesExtension extends CompilerExtension
 		$styleManager->addSetup('setPath', array('assets'));
 
 		// register latte macros
+		$engine = $container->getDefinition('nette.latteFactory');
+		$install = 'WebResources\NetteManager\Latte\Macros::install';
+		$engine->addSetup($install . '(?->getCompiler())', array('@self'));
+
 		$engine = $container->getDefinition('nette.latte');
 		$install = 'WebResources\NetteManager\Latte\Macros::install';
-		$engine->addSetup($install . '(?->compiler)', array('@self'));
+		$engine->addSetup($install . '(?->getCompiler())', array('@self'));
 	}
 
 

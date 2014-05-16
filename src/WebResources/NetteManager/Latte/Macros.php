@@ -2,21 +2,21 @@
 
 namespace WebResources\NetteManager\Latte;
 
-use Nette\Latte\Compiler;
-use Nette\Latte\Macros\MacroSet;
-use Nette\Latte\PhpWriter;
-use Nette\Latte\MacroNode;
+use Nette;
+use Latte;
+use Latte\MacroNode;
+use Latte\PhpWriter;
 
 
 
-class Macros extends MacroSet
+class Macros extends Latte\Macros\MacroSet
 {
 
 	/**
 	 * @param \Nette\Latte\Compiler $compiler
 	 * @return \Nette\Latte\Macros\MacroSet|void
 	 */
-	public static function install(Compiler $compiler)
+	public static function install(Latte\Compiler $compiler)
 	{
 		$me = new static($compiler);
 
