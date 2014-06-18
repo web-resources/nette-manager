@@ -10,6 +10,16 @@ use Nette,
 class ScriptManager implements IScriptManager
 {
 
+	/** @var array|null */
+	private $allowedThemes;
+
+
+	public function setAllowedThemes($themes)
+	{
+		$this->allowedThemes = $themes;
+	}
+
+
 	/**
 	 * Definition of scripts
 	 *
@@ -240,6 +250,9 @@ class ScriptManager implements IScriptManager
 			throw new \Exception("Script '$name' has no definition.");
 		}
 		$script = (object) $this->scripts[$name];
+		if (isset($script->theme) && $this->allowedThemes !== NULL && !in_array($script->theme, $this->allowedThemes)) {
+			return;
+		}
 		$script->name = $name;
 		$script->printed = FALSE;
 		$script->depends = isset($script->depends) ? (is_array($script->depends) ? $script->depends : array($script->depends)) : array();
