@@ -12,10 +12,6 @@ use Latte\PhpWriter;
 class Macros extends Latte\Macros\MacroSet
 {
 
-	/**
-	 * @param \Nette\Latte\Compiler $compiler
-	 * @return \Nette\Latte\Macros\MacroSet|void
-	 */
 	public static function install(Latte\Compiler $compiler)
 	{
 		$me = new static($compiler);
@@ -27,11 +23,6 @@ class Macros extends Latte\Macros\MacroSet
 	}
 
 
-	/**
-	 * @param \Nette\Latte\MacroNode $node
-	 * @param \Nette\Latte\PhpWriter $writer
-	 * @return string
-	 */
 	public function macroScripts(MacroNode $node, PhpWriter $writer)
 	{
 		$output = $writer->write('echo $presenter->getContext()->getByType(%var)->setPresenter($presenter)', 'WebResources\NetteManager\IScriptManager');
@@ -43,11 +34,6 @@ class Macros extends Latte\Macros\MacroSet
 	}
 
 
-	/**
-	 * @param \Nette\Latte\MacroNode $node
-	 * @param \Nette\Latte\PhpWriter $writer
-	 * @return string
-	 */
 	public function macroStyles(MacroNode $node, PhpWriter $writer)
 	{
 		$output = $writer->write('echo $presenter->getContext()->getByType(%var)->setPresenter($presenter)', 'WebResources\NetteManager\IStyleManager');
@@ -59,22 +45,12 @@ class Macros extends Latte\Macros\MacroSet
 	}
 
 
-	/**
-	 * @param \Nette\Latte\MacroNode $node
-	 * @param \Nette\Latte\PhpWriter $writer
-	 * @return string
-	 */
 	public function macroScript(MacroNode $node, PhpWriter $writer)
 	{
 		return $writer->write('$presenter->getContext()->getByType(%var)->add(%node.array)', 'WebResources\NetteManager\IScriptManager');
 	}
 
 
-	/**
-	 * @param \Nette\Latte\MacroNode $node
-	 * @param \Nette\Latte\PhpWriter $writer
-	 * @return string
-	 */
 	public function macroStyle(MacroNode $node, PhpWriter $writer)
 	{
 		return $writer->write('$presenter->getContext()->getByType(%var)->add(%node.array)', 'WebResources\NetteManager\IStyleManager');
